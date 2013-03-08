@@ -29,15 +29,10 @@ window_size() ->
     ?SUCHTHAT(N, int(), N>0).
 
 execute_sliding(Mod, List, WindowSize) ->
-    Pid = eep_window_sliding:start(Mod, WindowSize),
-    [ Pid ! {push, Elem} || Elem <- List ],
-    Pid ! {debug, self()},
-    Res =
-        receive
-            {debug, {eep_stats_max, _Size, _Count, State}} ->
-                State
-        end,
-    Pid ! stop,
+    {ok, Pid} = eep_window_sliding:start_link(Mod, WindowSize),
+    [ eep_window_sliding:push(Pid, Event) || Event <- List ],
+    Res = eep_window_sliding:get_value(Pid),
+    eep_window_sliding:stop(Pid),
     Res.
 
 slice(List, WindowSize) when length(List) =< WindowSize ->

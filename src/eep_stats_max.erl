@@ -40,11 +40,15 @@
 init() ->
   0.
 
-accumulate(State,X) ->
-  case State >= X of true -> State; false -> X end.
+accumulate(State, X) when State >= X ->
+    State;
+accumulate(_, X) ->
+    X.
 
-compensate(State,X) ->
-  case State >= X of true -> X; false -> State end.
+compensate(State,X) when State >= X ->
+    X;
+compensate(State, _) ->
+    State.
 
 emit(State) ->
   State.

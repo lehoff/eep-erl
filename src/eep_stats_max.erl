@@ -40,18 +40,18 @@
 init() ->
   0.
 
-accumulate(State, X) when State >= X ->
-    State;
-accumulate(_, X) ->
+accumulate({_OldWindow,Max}, X) when Max >= X ->
+    Max;
+accumulate({_, _}, X) ->
     X.
 
-compensate(State,X) when State >= X ->
-    X;
-compensate(State, _) ->
-    State.
+compensate({_NewWindow, Max}, X) when Max > X ->
+    Max;
+compensate({NewWindow, Max}, Max) ->
+    lists:max(NewWindow).
 
-emit(State) ->
-  State.
+emit({_Win,Max}) ->
+  Max.
 
 -ifdef(TEST).
 

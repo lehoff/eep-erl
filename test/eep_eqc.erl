@@ -11,8 +11,18 @@ prop_sliding_max() ->
                 Res = execute_sliding(eep_stats_max, List, WindowSize),
 %%                io:format("done execute_sliding~n"),
                 Expected = lists:max(slice(List, WindowSize)),
+                io:format("Got ~p, expected ~p~n", [Res, Expected]),
                 Res == Expected
             end).
+
+%% prop_sliding_sum() ->
+%%     ?FORALL({List, WindowSize}, {nonempty_int_list(),window_size()},
+%%             begin
+%%                 Res = execute_sliding(eep_stats_sum, List, WindowSize),
+%%                 Expected = lists:sum(slice(List, WindowSize)),
+%%                 Res == Expected
+%%             end).
+    
 
 
 %% for now we only consider positive integers until we understand the

@@ -72,19 +72,19 @@ handle_call(stop, _From, State) ->
 handle_call(get_value, _From, #state{value=Value}=State) ->
     {reply, Value, State};
 handle_call({push, Event}, _From, #state{mod=Mod,
-                                         window=Win,
+                                         window=Window,
                                          size=Size,
-                                         value=Value}=State) when length(Win) < Size ->
-    NewValue  = Mod:accumulate(Value, Event),
-    NewWindow = Win ++ [Event],
+                                         value=Value}=State) when length(Window) < Size ->
+    NewWindow = Window ++ [Event],
+    NewValue  = Mod:accumulate({Window,Value}, Event),
     {reply, NewValue, State#state{window=NewWindow,
                                   value=NewValue}};
 handle_call({push, Event}, _From, #state{mod=Mod,
-                                         window=[Drop|Win],
+                                         window=[Drop|OldTl],
                                          value=Value}=State) ->
-    TempValue = Mod:compensate(Value, Drop),
-    NewValue  = Mod:accumulate(TempValue, Event),
-    NewWindow = Win ++ [Event],
+    NewWindow = OldTl ++ [Event],
+    TempValue = Mod:compensate({NewWindow,Value}, Drop),
+    NewValue  = Mod:accumulate({NewWindow,TempValue}, Event),
     {reply, NewValue, State#state{window=NewWindow,
                                   value=NewValue}}.
 
